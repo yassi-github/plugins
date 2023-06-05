@@ -64,6 +64,12 @@ const (
 	// IngressPolicySameBridge executes `iptables` regardless to the value of `Backend`.
 	// IngressPolicySameBridge may not work as expected for non-bridge networks.
 	IngressPolicySameBridge IngressPolicy = "same-bridge"
+
+	// IngressPolicyStrictSameBridge ("strict-same-bridge"): connections from the same bridge are accepted, others are blocked.
+	// This is similar to how Docker libnetwork works.
+	// IngressPolicyStrictSameBridge executes `iptables` regardless to the value of `Backend`.
+	// IngressPolicyStrictSameBridge also works for non-bridge networks.
+	IngressPolicyStrictSameBridge IngressPolicy = "strict-same-bridge"
 )
 
 type FirewallBackend interface {
