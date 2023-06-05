@@ -1,0 +1,22 @@
+# e.g.
+# docker build -t cni-plugins-test:jammy-alpine - < Dockerfile.test.ubuntu2204
+# docker build -t cni-plugins-test:jammy-1.19.9 --build-arg GO_TAG="1.19.9" - < Dockerfile.test.ubuntu2204
+ARG GO_TAG="alpine"
+
+FROM docker.io/golang:${GO_TAG}
+
+# iptables not work in alpine image for some reason.
+FROM docker.io/ubuntu:jammy
+
+# install depends
+RUN apt update && DEBIAN_FRONTEND=noninteractive apt -y install git sudo iptables nftables dbus-daemon iputils-ping net-tools iproute2 && apt clean && rm -rf /var/lib/apt/lists/*
+
+# install golang
+COPY --from=golang /usr/local/go/ /usr/local/go/
+ENV PATH $PATH:/usr/local/go/bin:/root/go/bin
+
+# install test binaries to /root/go/bin/*
+RUN export GO111MODULE=off && \
+    go get github.com/containernetworking/cni/cnitool && \
+    go get github.com/mattn/goveralls && \
+    go get github.com/modocache/gover
